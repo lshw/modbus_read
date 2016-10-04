@@ -14,10 +14,12 @@ int main(int argc, char *argv[])
 	char gtype[100];
 
 	i = strlen(argv[0]);
-	for(; i>0 ; i--) if(argv[0][i] == '\\' || argv[0][i] == '/') break; //basename
-	i++;
+	for(; i>0 ; i--) 
+		if(argv[0][i] == '\\' || argv[0][i] == '/') {
+			i++;
+			break; //basename
+		}
 	if(strcmp(&argv[0][i],"modbus_write") == 0) write = 1;
-
 	if(argc == 2)
 		if(argv[1][0] == '-' & argv[1][1] == 'v') {
 			printf("%s\r\n",ver);
