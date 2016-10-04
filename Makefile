@@ -8,7 +8,7 @@ clean:
 modbus_read:  modbus_read.c
 	gcc -o modbus_read  modbus_read.c -lmodbus
 
-install:	
+install:modbus_read
 	install -m755 -p modbus_read $(DESTDIR)$(BINDIR)/
 	ln -f -s $(DESTDIR)$(BINDIR)/modbus_read $(DESTDIR)$(BINDIR)/modbus_write
 
