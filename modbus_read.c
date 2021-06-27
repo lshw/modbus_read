@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 	int16_t i,m,rc,write = 0,ret=0;
 	FILE *fpt = NULL;
 	char gtype[100];
+	char * buf;
 
 	i = strlen(argv[0]);
 	for(; i>0 ; i--) 
@@ -26,11 +27,11 @@ int main(int argc, char *argv[])
 			return 0;
 		}
 
-	if (argc != 6 && argc != 7) {
+	if (argc != 6 && argc != 7 && argc != 8) {
 		if(write == 0)
 			printf("error, use:\r\n%s /dev/ttyUSB0 19200 1 0 2 [%s]\r\n%s dev speed client_id reg_addr len [type]\r\n",argv[0],"%04x",argv[0]); 
 		else
-			printf("error,use:\r\n%s /dev/ttyUSB0 9600 88 0 1 [%s]\r\n%s dev speed client_id reg_addr dat [type]\r\n",argv[0],"%d",argv[0]);
+			printf("error,use:\r\n%s /dev/ttyUSB0 9600 88 0 1 [%s]\r\n%s dev speed client_id reg_addr dat [type] [i]\r\n",argv[0],"%d",argv[0]);
 		return -2;   //命令行参数错误 
 	}
 	ctx = modbus_new_rtu(argv[1], atoi(argv[2]) , 'N', 8, 2);
@@ -66,8 +67,17 @@ int main(int argc, char *argv[])
 					printf(gtype,data[m] & 0xff);
 				} else if(gtype[0] == '%' & gtype[1] == 'f') {
 					printf(gtype,modbus_get_float(&data[2*m]));
-				}else 
-					printf(gtype, data[m]);
+				}else {
+
+				        if(argc==8){
+					       buf=argv[7];
+					       if(buf[0]=='i')
+					               printf("%d ", (int16_t) data[m]);
+					       else
+					               printf(gtype, (uint16_t) data[m]);
+					}else
+					        printf(gtype, (uint16_t) data[m]);
+				}
 			}
 		}
 	}else { //modbus_write /dev/ttyUSBPL0 9600 88 1 4234 %d
