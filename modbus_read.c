@@ -7,13 +7,12 @@
 char * ver="1.0";
 int main(int argc, char *argv[])
 {
-	uint16_t data[100] ;
+	uint16_t dat,data[100] ;
 	modbus_t *ctx;
 	int16_t i,m,rc,write = 0,ret=0;
 	FILE *fpt = NULL;
 	char gtype[100];
 	char * buf;
-
 	i = strlen(argv[0]);
 	for(; i>0 ; i--) 
 		if(argv[0][i] == '\\' || argv[0][i] == '/') {
@@ -55,7 +54,7 @@ int main(int argc, char *argv[])
 			strcpy(gtype,"%04x ");
 		}
 		i=atoi(argv[5]);
-		if(gtype[0] == '%' & gtype[1] == 'f') m=i+i;
+		if(gtype[0] == '%' && (gtype[1] == 'f' || gtype[1] == 'F')) m=i+i;
 		else m=i;
 		memset(data, 0, m * sizeof(uint16_t));
 		rc = modbus_read_registers(ctx, atoi(argv[4]),
@@ -67,6 +66,11 @@ int main(int argc, char *argv[])
 					printf(gtype,data[m] & 0xff);
 				} else if(gtype[0] == '%' & gtype[1] == 'f') {
 					printf(gtype,modbus_get_float(&data[2*m]));
+				} else if(gtype[0] == '%' & gtype[1] == 'F') {
+                                        dat = data[2 * m];
+                                        data[2 * m] = data[2 * m + 1];
+                                        data[2 * m + 1] = dat;
+					printf(gtype,modbus_get_float(&data[2 * m]));
 				}else {
 
 				        if(argc==8){
